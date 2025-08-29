@@ -1,15 +1,23 @@
 #!/bin/bash
 
-# Check if exactly one argument is provided
-# This block checks if the number of arguments ($#) is not equal to 1. If it's not, it prints a usage message and exits with an error code (1).
-if [ "$#" -ne 1 ]; then
-  echo "Usage: $0 <your_argument>"
-  exit 1
-fi
+TAR_ARCHIVE=$1
+FOLDER_NAME=$(basename "$TAR_ARCHIVE" .tgz)
+CLEAN_TAR_ARCHIVE="cleaned_${TAR_ARCHIVE}"
+COOL_SPOT=$(pwd)
 
-# Store the first argument in a variable for clarity
-input_argument="$1"
+# make a temp directory
+SCRATCH=$(mktemp --directory SCRATCH-XXXXXX)
 
-# Print a message using the provided argument
-echo "You provided the argument: $input_argument"
+tar -xzf "$TAR_ARCHIVE" -C "$SCRATCH"
+
+cd "$SCRATCH" || exit
+
+# find the files with deletion marking and delete them
+grep -rlZ "DELETE\ ME\!" "$FOLDER_NAME" | xargs rm
+
+tar -czf "$CLEAN_TAR_ARCHIVE" "$FOLDER_NAME"
+
+mv "$CLEAN_TAR_ARCHIVE" ./..
+cd "$COOL_SPOT" || exit 
+rm -rf "$SCRATCH"
 
