@@ -13,7 +13,7 @@ tar -xzf "$TAR_ARCHIVE" -C "$SCRATCH"
 cd "$SCRATCH" || exit
 
 # find the files with deletion marking and delete them
-grep -rlZ "DELETE\ ME\!" "$FOLDER_NAME" | xargs rm
+grep -rl "DELETE ME!" "$FOLDER_NAME" | xargs rm
 
 tar -czf "$CLEAN_TAR_ARCHIVE" "$FOLDER_NAME"
 
